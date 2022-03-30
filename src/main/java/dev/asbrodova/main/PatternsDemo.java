@@ -6,10 +6,15 @@ import dev.asbrodova.main.patterns.factories.abstractfactory.impl.AnimalFactoryP
 import dev.asbrodova.main.patterns.factories.abstractfactory.model.TypeOfAnimal;
 import dev.asbrodova.main.patterns.factories.factory.impl.AnimalFactory;
 import dev.asbrodova.main.patterns.factories.factory.model.AnimalType;
+import dev.asbrodova.main.patterns.singleton.EarlySingleton;
+import dev.asbrodova.main.patterns.singleton.LazySingleton;
+import dev.asbrodova.main.patterns.singleton.SerializableSingleton;
+
+import java.io.*;
 
 public class PatternsDemo {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
 
         // FACTORY PATTERN DEMO
         AnimalFactory animalFactory = new AnimalFactory();
@@ -35,6 +40,29 @@ public class PatternsDemo {
         tiger.initialize();
         parrot.initialize();
         kitty.initialize();
+
+        //SINGLETON DEMO: EARLY, LAZY AND SERIALIZED
+        EarlySingleton.ifInitialized();
+
+        LazySingleton.ifInitialized();
+        LazySingleton.getInstance();
+        LazySingleton.ifInitialized();
+
+        SerializableSingleton serializableSingleton1 = SerializableSingleton.getInstance();
+        ObjectOutput out = null;
+
+        // Serialize object state to file
+        out = new ObjectOutputStream(new FileOutputStream("singleton.ser"));
+        out.writeObject(serializableSingleton1);
+        out.close();
+
+        // deserialize from file to object
+        ObjectInput in = new ObjectInputStream(new FileInputStream("singleton.ser"));
+        SerializableSingleton serializableSingleton2 = (SerializableSingleton) in.readObject();
+        in.close();
+
+        System.out.println("Is singleton object is the same before and after serialization/deserialization? "
+                + (serializableSingleton1.hashCode() == serializableSingleton2.hashCode()));
 
     }
 }
